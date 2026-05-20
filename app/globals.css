@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #C41E3A;
+  --color-primary-glow: #E63950;
+  --color-jade: #22C55E;
+  --color-jade-dark: #1B4332;
+  --color-accent: #C9A84C;
+  --color-surface: #0A0A08;
+  --color-surface-light: #141210;
+  --color-cream: #E8DCC8;
+  --color-cream-muted: #8B7E6A;
+}
+
+body {
+  background: #0A0A08;
+  color: #E8DCC8;
+  min-height: 100vh;
+  font-family: 'Noto Serif SC', serif;
+}
+
+/* 红色霓虹文字 */
+.neon-red {
+  text-shadow:
+    0 0 10px rgba(196, 30, 58, 0.5),
+    0 0 20px rgba(196, 30, 58, 0.3),
+    0 0 40px rgba(196, 30, 58, 0.15);
+}
+
+/* 绿色霓虹文字 */
+.neon-green {
+  text-shadow:
+    0 0 8px rgba(34, 197, 94, 0.5),
+    0 0 16px rgba(34, 197, 94, 0.25);
+}
+
+/* 红色渐变按钮 */
+.btn-retro {
+  background: linear-gradient(135deg, #C41E3A, #A01830);
+  color: #E8DCC8;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: 'Noto Serif SC', serif;
+  transition: all 0.3s;
+  box-shadow: 0 0 12px rgba(196, 30, 58, 0.3);
+}
+.btn-retro:hover {
+  box-shadow: 0 0 20px rgba(196, 30, 58, 0.5);
+  transform: scale(1.02);
+}
+.btn-retro:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 歌词行淡入动画 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
