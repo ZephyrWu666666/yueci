@@ -42,36 +42,22 @@ const SIMPLIFIED_TO_TRADITIONAL: Record<string, string> = {
 
 /**
  * 加载粤拼字典（带缓存）
- * 支持服务端和客户端两种加载方式
+ * 统一使用 fetch 加载，兼容 Edge Runtime
  */
 async function loadDict(): Promise<Record<string, string[]>> {
   if (dictCache) return dictCache;
 
-  // 服务端环境：直接读取文件
-  if (typeof window === 'undefined') {
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const dictPath = path.join(process.cwd(), 'public', 'data', 'jyutping-dict.json');
-      if (fs.existsSync(dictPath)) {
-        const content = fs.readFileSync(dictPath, 'utf-8');
-        dictCache = JSON.parse(content);
-        return dictCache!;
-      }
-    } catch {
-      // 如果读取失败，使用内置精简字典
+  try {
+    const url = typeof window === 'undefined'
+      ? 'https://yueci.pages.dev/data/jyutping-dict.json'
+      : '/data/jyutping-dict.json';
+    const res = await fetch(url);
+    if (res.ok) {
+      dictCache = await res.json();
+      return dictCache!;
     }
-  } else {
-    // 客户端环境：通过 fetch 加载
-    try {
-      const res = await fetch('/data/jyutping-dict.json');
-      if (res.ok) {
-        dictCache = await res.json();
-        return dictCache!;
-      }
-    } catch {
-      // 如果 fetch 失败，使用内置精简字典
-    }
+  } catch {
+    // fetch 失败，使用内置精简字典
   }
 
   dictCache = COMMON_CHARS_DICT;

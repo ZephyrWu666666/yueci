@@ -19,6 +19,7 @@ export interface SearchResult {
   duration: number;
   hasLrc: boolean;
   syncedLyrics: string;
+  instrumental?: boolean;
 }
 
 // LRC 解析后的单行

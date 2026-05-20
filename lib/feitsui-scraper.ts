@@ -51,7 +51,7 @@ export async function fetchFeitsuiJyutping(
 function findLyricUrl(
   html: string,
   songName: string,
-  artistName: string
+  _artistName: string
 ): string | null {
   // 匹配歌词链接: /zh-hans/lyrics/数字
   const linkRegex = /href="(\/zh-hans\/lyrics\/\d+)"/g;

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LrclibTrack, SearchResult } from '@/lib/types';
 
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 const LRCLIB_BASE = 'https://lrclib.net/api';
@@ -174,7 +175,8 @@ export async function GET(request: NextRequest) {
 
     const data: LrclibTrack[] = await response.json();
 
-    const allTracks = deduplicateTracks(
+    // 过滤有同步歌词的曲目
+    const tracksWithLyrics = deduplicateTracks(
       data
         .filter((t) => t.syncedLyrics && !t.instrumental)
         .map((t) => ({
@@ -189,12 +191,34 @@ export async function GET(request: NextRequest) {
     );
 
     // 优先返回粤语版本（歌词特征词 OR 已知粤语歌手）
-    const cantonese = allTracks.filter(
+    const cantonese = tracksWithLyrics.filter(
       (t) => isCantoneseLyrics(t.syncedLyrics) || isCantoneseArtist(t.artist)
     );
 
     // 如果有粤语版本，只返回粤语；否则返回全部（让用户知道没找到粤语版）
-    const tracks = cantonese.length > 0 ? cantonese : allTracks;
+    const tracks = cantonese.length > 0 ? cantonese : tracksWithLyrics;
+
+    // 如果完全没有有歌词的版本，返回所有结果（包括 instrumental）
+    if (tracks.length === 0 && data.length > 0) {
+      const allTracks = deduplicateTracks(
+        data.map((t) => ({
+          id: t.id,
+          name: t.trackName,
+          artist: t.artistName,
+          album: t.albumName,
+          duration: t.duration,
+          hasLrc: !!t.syncedLyrics,
+          syncedLyrics: t.syncedLyrics || '',
+          instrumental: t.instrumental,
+        }))
+      );
+      return NextResponse.json({
+        tracks: allTracks,
+        hasCantonese: false,
+        noLyrics: true,
+        message: '该歌曲在数据库中被标记为纯音乐，暂无歌词',
+      });
+    }
 
     return NextResponse.json({ tracks, hasCantonese: cantonese.length > 0 });
   } catch (error) {

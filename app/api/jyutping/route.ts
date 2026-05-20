@@ -4,6 +4,7 @@ import { fetchFeitsuiJyutping } from '@/lib/feitsui-scraper';
 import { alignLyrics } from '@/lib/lyrics-aligner';
 import { generateLrc } from '@/lib/lrc-generator';
 
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
