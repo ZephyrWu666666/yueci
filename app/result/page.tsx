@@ -60,11 +60,9 @@ function ResultContent() {
 
   useEffect(() => {
     if (!syncedLyrics) {
-      const timer = setTimeout(() => {
-        setError('未提供歌词内容');
-        setLoading(false);
-      }, 0);
-      return () => clearTimeout(timer);
+      setError('未提供歌词内容');
+      setLoading(false);
+      return;
     }
 
     const processLyrics = async () => {
@@ -205,59 +203,59 @@ function ResultContent() {
   }
 
   return (
-    <main className="min-h-screen px-4 sm:px-6 py-4 sm:py-8 max-w-4xl mx-auto">
+    <main className="min-h-screen flex flex-col px-4 sm:px-6 py-6 sm:py-8 max-w-4xl mx-auto">
       {/* 顶部导航 */}
       <button
         onClick={() => router.push('/')}
-        className="flex items-center gap-2 text-cream-muted hover:text-primary transition-colors mb-4 sm:mb-8 text-sm sm:text-base"
+        className="flex items-center gap-2 text-cream-muted hover:text-primary transition-colors mb-6 sm:mb-8 active:opacity-70"
       >
-        <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
+        <ArrowLeft size={18} />
         返回
       </button>
 
       {/* 歌曲信息 */}
-      <div className="mb-4 sm:mb-8">
-        <h1 className="text-xl sm:text-3xl font-bold text-cream neon-red mb-2 sm:mb-3 truncate">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-cream neon-red mb-3">
           {artistName ? `${artistName} - ${songName}` : songName}
         </h1>
-        <div className="flex items-center gap-1.5 sm:gap-3 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <span
-            className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm ${
+            className={`px-2.5 py-1 rounded-full text-xs sm:text-sm ${
               source === 'feitsui'
                 ? 'bg-jade-dark/50 text-jade'
                 : 'bg-accent/20 text-accent'
             }`}
           >
-            {source === 'feitsui' ? '✓ 翡翠粤语歌词' : '⚠ 本地字典'}
+            {source === 'feitsui' ? '✓ 翡翠（权威）' : '⚠ 字典（兜底）'}
           </span>
           <span className="text-cream-muted text-xs sm:text-sm">
             覆盖率: {Math.round(coverage * 100)}%
           </span>
           <button
             onClick={toggleCharMode}
-            className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm bg-white/[0.03] border border-primary/10
-              text-cream hover:bg-white/[0.06] hover:border-primary/20 transition-all"
+            className="px-2.5 py-1 rounded-full text-xs sm:text-sm bg-white/[0.03] border border-primary/10
+              text-cream hover:bg-white/[0.06] hover:border-primary/20 transition-all active:scale-95"
           >
             {charMode === 'traditional' ? '繁體' : '简体'}
           </button>
           <button
             onClick={() => { setEditMode(!editMode); setActiveChar(null); }}
-            className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm border transition-all flex items-center gap-1 sm:gap-1.5 ${
+            className={`px-2.5 py-1 rounded-full text-xs sm:text-sm border transition-all flex items-center gap-1.5 active:scale-95 ${
               editMode
                 ? 'bg-primary/20 border-primary/40 text-primary'
                 : 'bg-white/[0.03] border-primary/10 text-cream hover:bg-white/[0.06] hover:border-primary/20'
             }`}
           >
-            <Edit3 size={12} className="sm:w-3.5 sm:h-3.5" />
+            <Edit3 size={14} />
             {editMode ? '退出审核' : '审核粤拼'}
           </button>
         </div>
       </div>
 
       {/* 歌词预览 / 编辑 */}
-      <div className="bg-white/[0.03] border border-white/[0.04] rounded-lg sm:rounded-xl p-3 sm:p-6 mb-4 sm:mb-8 max-h-[50vh] sm:max-h-[60vh] overflow-y-auto relative">
+      <div className="bg-white/[0.03] border border-white/[0.04] rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 flex-1 min-h-0 overflow-y-auto relative">
         {editMode && (
-          <div className="mb-3 sm:mb-4 px-2 sm:px-3 py-1.5 sm:py-2 bg-primary/10 border border-primary/20 rounded-lg text-xs sm:text-sm text-cream-muted">
+          <div className="mb-4 px-3 py-2 bg-primary/10 border border-primary/20 rounded-lg text-xs sm:text-sm text-cream-muted">
             点击粤拼音节可修改多音字读音，修改后直接下载即可保存
           </div>
         )}
@@ -268,22 +266,21 @@ function ResultContent() {
             className="animate-fade-in mb-3 sm:mb-4"
             style={{ animationDelay: `${lineIndex * 0.03}s` }}
           >
-            <div className="text-cream-muted text-xs mb-0.5 sm:mb-1">{line.time}</div>
-            <div className="text-base sm:text-xl text-cream mb-0.5 sm:mb-1">{line.text}</div>
+            <div className="text-cream-muted text-xs mb-1">{line.time}</div>
+            <div className="text-lg sm:text-xl text-cream mb-1">{line.text}</div>
             {line.jyutping && (
-              <div className="text-xs sm:text-sm font-medium">
+              <div className="text-sm font-medium">
                 {editMode ? (
-                  // 编辑模式：每个字可点击
                   <span className="inline-flex flex-wrap gap-x-0.5">
                     {parseLineForEdit(alignedLines[lineIndex].text, alignedLines[lineIndex].jyutping).map((pair, charIdx) => (
                       <span key={charIdx} className="inline-flex flex-col items-center">
-                        <span className="text-[10px] sm:text-xs text-cream-muted/50 leading-none">{pair.char}</span>
+                        <span className="text-xs text-cream-muted/50 leading-none">{pair.char}</span>
                         <button
                           onClick={() => handleCharClick(lineIndex, charIdx)}
-                          className={`px-0.5 sm:px-1 rounded text-xs sm:text-sm leading-tight transition-all ${
+                          className={`px-1 py-0.5 rounded text-sm leading-tight transition-all ${
                             activeChar?.lineIndex === lineIndex && activeChar?.charIndex === charIdx
                               ? 'bg-primary text-cream neon-red'
-                              : 'text-jade neon-green hover:bg-jade-dark/30'
+                              : 'text-jade neon-green hover:bg-jade-dark/30 active:bg-jade-dark/50'
                           }`}
                         >
                           {pair.pinyin || '?'}
@@ -301,40 +298,40 @@ function ResultContent() {
 
         {/* 替代读音弹窗 */}
         {activeChar && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setActiveChar(null)}>
+          <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={() => setActiveChar(null)}>
             <div
-              className="bg-surface-light border border-primary/20 rounded-lg sm:rounded-xl p-4 sm:p-6 max-w-sm w-full shadow-2xl"
+              className="bg-surface-light border border-primary/20 rounded-t-2xl sm:rounded-xl p-5 sm:p-6 max-w-sm w-full mx-0 sm:mx-4 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <span className="text-2xl sm:text-3xl text-cream mr-2 sm:mr-3">{activeChar.char}</span>
-                  <span className="text-jade text-base sm:text-lg">当前: {activeChar.jyutping}</span>
+                  <span className="text-3xl text-cream mr-3">{activeChar.char}</span>
+                  <span className="text-jade text-lg">当前: {activeChar.jyutping}</span>
                 </div>
-                <button onClick={() => setActiveChar(null)} className="text-cream-muted hover:text-cream">
-                  <X size={18} className="sm:w-5 sm:h-5" />
+                <button onClick={() => setActiveChar(null)} className="text-cream-muted hover:text-cream p-1">
+                  <X size={20} />
                 </button>
               </div>
 
               {loadingReadings ? (
-                <div className="flex items-center gap-2 text-cream-muted py-3 sm:py-4">
-                  <Loader2 size={14} className="animate-spin sm:w-4 sm:h-4" />
+                <div className="flex items-center gap-2 text-cream-muted py-4">
+                  <Loader2 size={16} className="animate-spin" />
                   查询读音中...
                 </div>
               ) : altReadings.length > 0 ? (
-                <div className="space-y-1.5 sm:space-y-2">
-                  <p className="text-cream-muted text-xs sm:text-sm mb-2 sm:mb-3">选择正确读音：</p>
+                <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+                  <p className="text-cream-muted text-sm mb-3">选择正确读音：</p>
                   {altReadings.map((reading, i) => (
                     <button
                       key={i}
                       onClick={() => handleSelectReading(reading)}
-                      className={`w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition-all flex items-center justify-between ${
+                      className={`w-full text-left px-4 py-3 rounded-lg transition-all flex items-center justify-between active:scale-[0.98] ${
                         reading === activeChar.jyutping
                           ? 'bg-primary/20 border border-primary/40 text-primary'
                           : 'bg-white/[0.03] border border-white/[0.04] text-cream hover:bg-white/[0.06] hover:border-primary/20'
                       }`}
                     >
-                      <span className="text-base sm:text-lg font-mono">{reading}</span>
+                      <span className="text-lg font-mono">{reading}</span>
                       {reading === activeChar.jyutping && (
                         <span className="text-xs text-primary">当前</span>
                       )}
@@ -342,7 +339,7 @@ function ResultContent() {
                   ))}
                 </div>
               ) : (
-                <p className="text-cream-muted py-3 sm:py-4 text-sm">未找到其他读音</p>
+                <p className="text-cream-muted py-4">未找到其他读音</p>
               )}
             </div>
           </div>
@@ -350,25 +347,25 @@ function ResultContent() {
       </div>
 
       {/* 操作按钮 */}
-      <div className="flex gap-2 sm:gap-4 flex-wrap">
-        <button onClick={handleDownload} className="btn-retro flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base">
-          <Download size={16} className="sm:w-[18px] sm:h-[18px]" />
+      <div className="flex gap-3 sm:gap-4">
+        <button onClick={handleDownload} className="btn-retro flex items-center gap-2 text-sm sm:text-base">
+          <Download size={18} />
           下载 LRC 文件
         </button>
 
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base
+          className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-lg text-sm sm:text-base
             bg-white/[0.03] border border-primary/10 text-cream
-            hover:bg-white/[0.06] hover:border-primary/20 transition-all"
+            hover:bg-white/[0.06] hover:border-primary/20 transition-all active:scale-95"
         >
-          {copied ? <Check size={16} className="text-jade sm:w-[18px] sm:h-[18px]" /> : <Copy size={16} className="sm:w-[18px] sm:h-[18px]" />}
+          {copied ? <Check size={18} className="text-jade" /> : <Copy size={18} />}
           {copied ? '已复制' : '复制内容'}
         </button>
       </div>
 
       {/* 底部说明 */}
-      <div className="mt-6 sm:mt-12 pt-4 sm:pt-6 border-t border-primary/10 text-cream-muted text-xs sm:text-sm">
+      <div className="mt-8 sm:mt-12 pt-4 sm:pt-6 border-t border-primary/10 text-cream-muted text-xs sm:text-sm pb-4">
         <p>
           粤拼数据来源：
           <span className="text-jade">

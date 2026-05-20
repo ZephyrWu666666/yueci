@@ -16,7 +16,20 @@ body {
   background: #0A0A08;
   color: #E8DCC8;
   min-height: 100vh;
+  min-height: 100dvh;
   font-family: 'Noto Serif SC', serif;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+input, button, select, textarea {
+  font-size: 16px;
+}
+
+@media (max-width: 640px) {
+  body {
+    overscroll-behavior: none;
+  }
 }
 
 /* 红色霓虹文字 */
